@@ -52,3 +52,29 @@ export function loginUser(req, res) {
         }
     })
 }
+
+//check if user is admin
+export function isAdmin(req, res) {
+    let isAdmin = false;
+
+    if (req.user != null) {
+        if (req.user.role == "admin") {
+            isAdmin = true;
+        }
+    }
+    return isAdmin;
+}
+
+// check if user is a general user
+
+export default function isUser(req, res) {
+    let isUser = false;
+
+    if (req.user != null) {
+        if (req.user.role == "user") {
+            isUser = true;
+        }
+
+    }
+    return isUser;
+}
