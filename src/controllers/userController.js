@@ -65,8 +65,8 @@ export function isAdmin(req, res) {
     return isAdmin;
 }
 
-// check if user is a general user
 
+// check if user is a general user
 export default function isUser(req, res) {
     let isUser = false;
 
@@ -77,4 +77,20 @@ export default function isUser(req, res) {
 
     }
     return isUser;
+}
+
+//get all users
+export async function getAllUsers(req, res) {
+    if (isAdmin(req)) {
+        try {
+            const users = await User.find();
+            res.json(users);
+        } catch (e) {
+            res.status(500).json({ error: "Failed to get users" });
+        }
+
+    } else {
+        res.status(403).json({ error: "Unauthorized" });
+    }
+
 }
