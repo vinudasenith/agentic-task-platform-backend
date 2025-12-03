@@ -1,0 +1,54 @@
+import User from '../models/user.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+//register user
+export function registerUser(req, res) {
+    const data = req.body;
+    data.password = bcrypt.hashSync(data.password, 10);
+
+    const newUser = new User(data);
+
+    newUser.save(), then(() => {
+        res.json({ message: "User regsitered successfully!" })
+
+    }).catch((error) => {
+        res.status(500).json({ message: "Error registering failed" })
+    })
+}
+
+//login user
+export function loginUser(req, res) {
+    const data = req.body;
+
+    User.findOne({
+        email: data.email
+    }).then((user) => {
+        if (user == null) {
+            res.status(404).json({ error: "User not found" })
+        } else {
+            if (user.isBlocked) {
+                res.status(403).json({ error: "User is blocked" })
+                return;
+            }
+
+            const isPasswordValid = bcrypt.compareSync(data.password, user.password);
+
+            if (isPasswordCorrect) {
+                const token = jwt.sign({
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }, process.env.JWT_SECRET)
+
+                res.json({ message: "Login successful", token: token, user: user })
+
+            } else {
+                res.status(401).json({ error: "Invalid password" });
+            }
+        }
+    })
+}
