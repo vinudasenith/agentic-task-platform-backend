@@ -36,3 +36,21 @@ export async function getTasks(req, res) {
     }
 }
 
+// Get a single task by ID
+export async function getTaskById(req, res) {
+    try {
+        const task = await Task.findById(req.params.id).populate("createdBy", "firstName lastName email");
+
+        if (!task) return res.status(404).json({ error: "Task not found" });
+
+        if (req.user.role !== "admin" && task.createdBy._id.toString() !== req.user._id) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        res.json(task);
+    } catch (error) {
+        console.error("Error fetching task:", error);
+        res.status(500).json({ error: "Failed to fetch task" });
+    }
+}
+
