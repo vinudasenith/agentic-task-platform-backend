@@ -1,7 +1,9 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-module.exports = (req, res, next) => {
+dotenv.config();
+
+const authMiddleware = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
@@ -13,3 +15,5 @@ module.exports = (req, res, next) => {
         return res.status(403).json({ message: 'Invalid token' });
     }
 };
+
+export default authMiddleware;
