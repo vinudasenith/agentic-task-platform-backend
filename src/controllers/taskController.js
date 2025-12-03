@@ -54,3 +54,46 @@ export async function getTaskById(req, res) {
     }
 }
 
+// Update task status
+export async function updateTaskStatus(req, res) {
+    try {
+        const { status } = req.body;
+        const task = await Task.findById(req.params.id);
+
+        if (!task) return res.status(404).json({ error: "Task not found" });
+
+        // Only creator or admin can update
+        if (req.user.role !== "admin" && task.createdBy.toString() !== req.user._id) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        task.status = status;
+        await task.save();
+
+        res.json({ message: "Task status updated", task });
+    } catch (error) {
+        console.error("Error updating task status:", error);
+        res.status(500).json({ error: "Failed to update task status" });
+    }
+}
+
+// Assign agent to task (admin only)
+export async function assignAgentToTask(req, res) {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        const task = await Task.findById(req.params.id);
+        if (!task) return res.status(404).json({ error: "Task not found" });
+
+        task.assignedAgent = req.body.assignedAgent;
+        await task.save();
+
+        res.json({ message: "Agent assigned to task", task });
+    } catch (error) {
+        console.error("Error assigning agent:", error);
+        res.status(500).json({ error: "Failed to assign agent" });
+    }
+}
+
