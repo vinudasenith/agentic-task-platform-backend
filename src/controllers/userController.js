@@ -6,18 +6,27 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 //register user
-export function registerUser(req, res) {
-    const data = req.body;
-    data.password = bcrypt.hashSync(data.password, 10);
+export async function registerUser(req, res) {
+    try {
+        const data = req.body;
 
-    const newUser = new User(data);
+        data.password = bcrypt.hashSync(data.password, 10);
 
-    newUser.save(), then(() => {
-        res.json({ message: "User regsitered successfully!" })
+        const newUser = new User(data);
 
-    }).catch((error) => {
-        res.status(500).json({ message: "Error registering failed" })
-    })
+        await newUser.save()
+
+        return res.status(201).json({
+            message: "User registered successfully"
+
+        });
+
+    } catch (error) {
+        console.error("Error registering user:", error);
+        return res.status(500).json({ error: "Internal server error" });
+
+    };
+
 }
 
 //login user
