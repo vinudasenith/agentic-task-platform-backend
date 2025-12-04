@@ -22,5 +22,15 @@ export async function createAgent(req, res) {
     }
 }
 
-
-
+//get all agent
+export async function getAgent(req, res) {
+    try {
+        const agents = await Agent.find();
+        return res.json(agents);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching agents",
+            error: error.message
+        })
+    }
+}
