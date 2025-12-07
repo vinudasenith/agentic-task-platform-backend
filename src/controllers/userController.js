@@ -48,10 +48,11 @@ export function loginUser(req, res) {
 
             if (isPasswordValid) {
                 const token = jwt.sign({
+                    id: user._id,
                     name: user.name,
                     email: user.email,
                     role: user.role
-                }, process.env.JWT_SECRET)
+                }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
                 res.json({ message: "Login successful", token: token, user: user })
 
