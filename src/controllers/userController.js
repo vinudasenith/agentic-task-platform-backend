@@ -104,3 +104,50 @@ export async function getAllUsers(req, res) {
     }
 
 }
+
+//get logged user deatils
+export async function getLoggedUser(req, res) {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" })
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+
+    }
+
+}
+
+// delete logged users account
+export async function deleteUserAccount(req, res) {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.status(200).json({
+            message: "Account deleted successfully",
+        });
+
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
